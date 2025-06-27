@@ -1,0 +1,93 @@
+<resources>
+    <!-- Theme chung của App -->
+    <style name="Theme.TruongQuocDat_2123110209" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+
+    <!-- Style gốc cho các nút social -->
+    <style name="SocialButtonNew">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Style con kế thừa -->
+    <style name="SocialButtonNew.Google" parent="SocialButtonNew">
+        <item name="android:background">#DB4437</item>
+    </style>
+    <style name="SocialButtonNew.Facebook" parent="SocialButtonNew">
+        <item name="android:background">#3B5998</item>
+    </style>
+
+    <style name="SocialButtonNew.Zalo" parent="SocialButtonNew">
+        <item name="android:background">#0068FF</item> <!-- xanh zalo -->
+    </style>
+
+    <style name="SocialButtonNew.Apple" parent="SocialButtonNew">
+        <item name="android:background">#000000</item>
+    </style>
+
+    <style name="SocialButtonNew.Gmail" parent="SocialButtonNew">
+        <item name="android:background">#D44638</item>
+    </style>
+
+    <style name="SocialButtonNew.Phone" parent="SocialButtonNew">
+        <item name="android:background">#4CAF50</item>
+    </style>
+
+    <style name="SocialButtonNew.Guest" parent="SocialButtonNew">
+        <item name="android:background">#9E9E9E</item>
+    </style>
+
+    <style name="SocialButtonNew.Other" parent="SocialButtonNew">
+        <item name="android:background">#607D8B</item>
+    </style>
+
+    <style name="SocialButtonNew.Support" parent="SocialButtonNew">
+        <item name="android:background">#00BCD4</item>
+    </style>
+
+    <style name="SocialButtonNew.Settings" parent="SocialButtonNew">
+        <item name="android:background">#8BC34A</item>
+    </style>
+
+    <style name="SocialButtonNew.Language" parent="SocialButtonNew">
+        <item name="android:background">#FFC107</item>
+    </style>
+
+    <style name="SocialButtonNew.Info" parent="SocialButtonNew">
+        <item name="android:background">#3F51B5</item>
+    </style>
+
+    <style name="SocialButtonNew.Terms" parent="SocialButtonNew">
+        <item name="android:background">#9C27B0</item>
+    </style>
+
+    <style name="SocialButtonNew.Policy" parent="SocialButtonNew">
+        <item name="android:background">#E91E63</item>
+    </style>
+
+    <style name="SocialButtonNew.Security" parent="SocialButtonNew">
+        <item name="android:background">#FF5722</item>
+    </style>
+
+    <style name="SocialButtonNew.Contact" parent="SocialButtonNew">
+        <item name="android:background">#795548</item>
+    </style>
+    <style name="CategoryButton">
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:backgroundTint">#EEEEEE</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/rounded_button</item>
+    </style>
+
+    <style name="ProductButton" parent="CategoryButton" />
+
+</resources>

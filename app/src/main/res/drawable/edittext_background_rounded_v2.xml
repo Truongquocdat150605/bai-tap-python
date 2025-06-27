@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF"/> <!-- Hoặc #F5F5F5 nếu muốn xám nhẹ -->
+    <stroke android:width="1dp" android:color="#CFD8DC"/>
+    <corners android:radius="8dp"/>
+</shape>

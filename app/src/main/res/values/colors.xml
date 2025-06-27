@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="login_accent_color_v2">#FF6200EE</color> <!-- Màu tím, bạn có thể thay bằng mã màu khác -->
+    <!-- Thêm các màu khác nếu cần -->
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorPrimary">#6200EE</color>
+</resources>

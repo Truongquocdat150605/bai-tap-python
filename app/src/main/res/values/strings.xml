@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Clothing Store</string>
+
+    <!-- Login Activity Strings -->
+    <string name="login_activity_label">Đăng nhập</string>
+    <string name="error_email_required">Vui lòng nhập Email</string>
+    <string name="error_password_required">Vui lòng nhập Mật khẩu</string>
+    <string name="error_invalid_email">Địa chỉ Email không hợp lệ</string>
+    <string name="error_password_too_short">Mật khẩu phải có ít nhất %d ký tự</string>
+    <string name="login_successful">Đăng nhập thành công!</string>
+    <string name="login_failed">Thông tin đăng nhập không chính xác</string>
+    <string name="action_forgot_password">Đã nhấn Quên mật khẩu</string>
+    <string name="action_login_google">Đã nhấn Đăng nhập với Google</string>
+    <string name="action_login_facebook">Đã nhấn Đăng nhập với Facebook</string>
+    <string name="at_login_activity">Đang ở LoginActivity</string>
+
+    <!-- Register Activity Strings (giả sử) -->
+    <string name="register_activity_label">Đăng ký</string>
+
+    <!-- Main Activity Strings (giả sử) -->
+    <string name="main_activity_label">Trang chính</string>
+</resources>

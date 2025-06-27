@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories">
+        <item>Tất cả</item>
+        <item>Áo</item>
+        <item>Quần</item>
+        <item>Giày</item>
+    </string-array>
+
+    <string-array name="genders">
+        <item>Tất cả</item>
+        <item>Nam</item>
+        <item>Nữ</item>
+    </string-array>
+
+    <string-array name="prices">
+        <item>Tất cả</item>
+        <item>Dưới 500k</item>
+        <item>500k - 1tr</item>
+        <item>Trên 1tr</item>
+    </string-array>
+
+    <string name="select_category">Chọn loại</string>
+    <string name="select_gender">Chọn giới tính</string>
+    <string name="select_price">Chọn giá</string>
+</resources>
