@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import androidx.appcompat.widget.SearchView; // Nhớ import nếu chưa có
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,32 @@ public class HomeActivity extends AppCompatActivity {
         bannerIndicator = findViewById(R.id.bannerIndicator);
         ImageButton btnGoToCart = findViewById(R.id.btnGoToCart); // Tham chiếu đến ImageButton
         cartItemCountTextView = findViewById(R.id.cartItemCount); // TextView hiển thị số lượng
+        SearchView searchView = findViewById(R.id.searchView);
+        ImageButton btnProfile = findViewById(R.id.btnProfile);
+        btnProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
+        ImageButton btnWishlist = findViewById(R.id.btnWishlist);
+        btnWishlist.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, WishlistActivity.class);
+            startActivity(intent);
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent intent = new Intent(HomeActivity.this, ProductListActivity.class);
+                intent.putExtra("searchQuery", query);
+                startActivity(intent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         // Thiết lập RecyclerView cho danh mục
         categoryRecyclerView.setLayoutManager(
@@ -47,8 +74,9 @@ public class HomeActivity extends AppCompatActivity {
         categories.add(new Category("Áo", R.drawable.ao_so_mi));
         categories.add(new Category("Quần", R.drawable.quan_jean));
         categories.add(new Category("Váy", R.drawable.vay));
+
         categories.add(new Category("Giày", R.drawable.giay_the_thao));
-//        categories.add(new Category("Phụ kiện", R.drawable.ic_category_phu_kien));
+
         CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
         categoryRecyclerView.setAdapter(categoryAdapter);
 
@@ -61,7 +89,7 @@ public class HomeActivity extends AppCompatActivity {
         products.add(new Product("Giày sneakers", R.drawable.product_giay_sneakers, "700000", "Giày thể thao năng động", "Unisex", "https://example.com/giay_sneakers.jpg"));
         products.add(new Product("Nón lưỡi trai", R.drawable.product_non_luoi_trai, "80000", "Nón thời trang cá tính", "Unisex", "https://example.com/non_luoi_trai.jpg"));
         products.add(new Product("Túi xách nữ", R.drawable.product_tui_xach_nu, "500000", "Túi xách da cao cấp", "Nữ", "https://example.com/tui_xach_nu.jpg"));
-     ProductAdapter productAdapter = new ProductAdapter(products);
+     ProductAdapter productAdapter = new ProductAdapter(products,false);
         productRecyclerView.setAdapter(productAdapter);
 
         // Thiết lập ViewPager2 cho Banner

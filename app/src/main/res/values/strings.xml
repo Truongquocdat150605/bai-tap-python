@@ -16,6 +16,13 @@
 
     <!-- Register Activity Strings (giả sử) -->
     <string name="register_activity_label">Đăng ký</string>
+    <string name="profile_desc">Hồ sơ</string>
+    <string name="cart_desc">Giỏ hàng</string>
+    <string name="wishlist_desc">Yêu thích</string>
+    <string name="header_title">Clothing Store</string>
+    <string name="category_title">Danh mục</string>
+    <string name="featured_title">Sản phẩm nổi bật</string>
+    <string name="cart_item_count">0</string>
 
     <!-- Main Activity Strings (giả sử) -->
     <string name="main_activity_label">Trang chính</string>

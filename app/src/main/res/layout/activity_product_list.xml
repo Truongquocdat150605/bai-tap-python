@@ -66,10 +66,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:overScrollMode="never" />
     <Button
-        android:id="@+id/buttonCancel" android:text="Hủy"
+        android:id="@+id/buttonCancel"
+        android:text="Hủy"
         android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="?attr/buttonBarButtonStyle" />
+        style="?attr/buttonBarButtonStyle"
+        app:layout_constraintTop_toBottomOf="@id/productRecyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

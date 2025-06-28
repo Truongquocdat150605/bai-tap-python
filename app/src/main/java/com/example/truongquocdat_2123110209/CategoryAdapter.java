@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import android.content.Intent;
+
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     private final List<Category> categoryList;
@@ -42,9 +43,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         holder.textView.setText(category.getName());
         holder.imageView.setImageResource(category.getImageResId());
 
-        // Thêm sự kiện nhấp vào danh mục
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), ProductListActivity.class);
+            intent.putExtra("selectedCategory", category.getName());
+
             holder.itemView.getContext().startActivity(intent);
         });
     }
@@ -52,24 +54,5 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public int getItemCount() {
         return categoryList.size();
-    }
-}
-
-// Class Category để lưu trữ dữ liệu
-class Category {
-    private String name;
-    private int imageResId;
-
-    public Category(String name, int imageResId) {
-        this.name = name;
-        this.imageResId = imageResId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getImageResId() {
-        return imageResId;
     }
 }

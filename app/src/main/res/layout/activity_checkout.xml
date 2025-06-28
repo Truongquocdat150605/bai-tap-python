@@ -94,7 +94,7 @@
                         android:id="@+id/tvDeliveryAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="216 St Paul's Rd, London N1 2LL, UK\nLiên hệ: +44-784232"
+                        android:text="41 đuòng số 4 , tăng nhơn A , TP.HCM"
                         android:textColor="#333333"
                         android:textSize="14sp" />
                 </LinearLayout>

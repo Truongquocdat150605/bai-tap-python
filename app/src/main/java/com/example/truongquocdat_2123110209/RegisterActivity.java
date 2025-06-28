@@ -1,13 +1,17 @@
 package com.example.truongquocdat_2123110209;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class RegisterActivity extends AppCompatActivity {
+    private static final String PREFS_NAME = "MyPrefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,7 +21,7 @@ public class RegisterActivity extends AppCompatActivity {
         EditText editTextPassword = findViewById(R.id.editTextPassword);
         EditText editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         Button buttonRegister = findViewById(R.id.buttonRegister);
-        Button buttonCancel = findViewById(R.id.buttonCancel); // Tham chiếu đến nút Hủy
+        Button buttonCancel = findViewById(R.id.buttonCancel);
 
         buttonRegister.setOnClickListener(view -> {
             String email = editTextEmail.getText().toString().trim();
@@ -25,20 +29,26 @@ public class RegisterActivity extends AppCompatActivity {
             String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
             if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(RegisterActivity.this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-            } else if (!password.equals(confirmPassword)) {
-                Toast.makeText(RegisterActivity.this, "Mật khẩu không khớp", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(RegisterActivity.this, "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
-                // Sau khi đăng ký thành công, bạn muốn quay lại màn hình đăng nhập
-                // Không cần tạo Intent mới nếu LoginActivity đã ở dưới cùng ngăn xếp
-                finish(); // Đóng RegisterActivity, tự động quay lại LoginActivity
+                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (!password.equals(confirmPassword)) {
+                Toast.makeText(this, "Mật khẩu không khớp", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Lưu email/password vào SharedPreferences
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            prefs.edit()
+                    .putString("saved_email", email)
+                    .putString("saved_password", password)
+                    .apply();
+
+            Toast.makeText(this, "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
+            finish(); // Đóng RegisterActivity, quay về LoginActivity
         });
 
-        // Xử lý sự kiện khi nhấn nút Hủy
-        buttonCancel.setOnClickListener(view -> {
-            finish(); // Đóng RegisterActivity và quay lại Activity trước đó (LoginActivity)
-        });
+        buttonCancel.setOnClickListener(view -> finish());
     }
 }

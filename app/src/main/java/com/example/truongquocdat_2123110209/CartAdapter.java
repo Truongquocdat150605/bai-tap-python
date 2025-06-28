@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -53,15 +54,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             int currentQuantity = item.getQuantity();
             if (currentQuantity > 1) {
                 item.setQuantity(currentQuantity - 1);
-                // Sử dụng updateProductQuantity()
                 CartManager.getInstance().updateProductQuantity(item.getProduct(), item.getQuantity());
                 notifyItemChanged(position);
                 if (listener != null) {
                     listener.onQuantityChanged();
                 }
             } else {
-                // Nếu số lượng là 1 và giảm nữa, thì xóa sản phẩm
-                // Sử dụng removeItem()
                 CartManager.getInstance().removeItem(item.getProduct());
                 cartItems.remove(position);
                 notifyItemRemoved(position);
@@ -76,7 +74,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.btnIncreaseQuantity.setOnClickListener(v -> {
             int currentQuantity = item.getQuantity();
             item.setQuantity(currentQuantity + 1);
-            // Phương thức addProduct đã có logic tự động tăng số lượng nếu sản phẩm đã tồn tại
             CartManager.getInstance().addProduct(item.getProduct(), 1);
             notifyItemChanged(position);
             if (listener != null) {
@@ -86,7 +83,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         // Xử lý nút xóa sản phẩm
         holder.btnRemoveItem.setOnClickListener(v -> {
-            // Sử dụng removeItem()
             CartManager.getInstance().removeItem(item.getProduct());
             cartItems.remove(position);
             notifyItemRemoved(position);
@@ -105,7 +101,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public static class CartViewHolder extends RecyclerView.ViewHolder {
         ImageView cartProductImage;
         TextView cartProductName, cartProductPrice, cartProductQuantity, cartTotalItemPrice;
-        Button btnDecreaseQuantity, btnIncreaseQuantity, btnRemoveItem;
+        Button btnDecreaseQuantity, btnIncreaseQuantity;
+        ImageButton btnRemoveItem;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -116,7 +113,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             cartTotalItemPrice = itemView.findViewById(R.id.cartTotalItemPrice);
             btnDecreaseQuantity = itemView.findViewById(R.id.btnDecreaseQuantity);
             btnIncreaseQuantity = itemView.findViewById(R.id.btnIncreaseQuantity);
-            btnRemoveItem = itemView.findViewById(R.id.btnRemoveItem);
+            btnRemoveItem = itemView.findViewById(R.id.btnRemoveItem); // Đã sửa thành ImageButton
         }
     }
 

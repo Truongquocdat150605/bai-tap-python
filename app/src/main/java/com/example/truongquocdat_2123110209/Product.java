@@ -8,7 +8,7 @@ public class Product implements Serializable {
     private String price;
     private String description;
     private String gender;
-    private String imageUrl; // ✅ Thêm biến này
+    private String imageUrl;
 
     public Product(String name, int imageResId, String price, String description, String gender, String imageUrl) {
         this.name = name;
@@ -16,30 +16,23 @@ public class Product implements Serializable {
         this.price = price;
         this.description = description;
         this.gender = gender;
-        this.imageUrl = imageUrl; // ✅ Gán giá trị
+        this.imageUrl = imageUrl;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+    public String getImageUrl() { return imageUrl; }
+    public String getName() { return name; }
+    public int getImageResId() { return imageResId; }
+    public String getPrice() { return price; }
+    public String getDescription() { return description; }
+    public String getGender() { return gender; }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getImageResId() {
-        return imageResId;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getGender() {
-        return gender;
+    // Thêm phương thức getCategory dựa trên tên
+    public String getCategory() {
+        String lowerName = name.toLowerCase().trim();
+        if (lowerName.startsWith("áo ")) return "áo";
+        if (lowerName.startsWith("quần ")) return "quần";
+        if (lowerName.startsWith("váy")) return "váy";
+        if (lowerName.startsWith("giày ")) return "giày";
+        return "tất cả";
     }
 }

@@ -7,16 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
-import android.content.Intent;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+import android.view.View;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 public class ProductListActivity extends AppCompatActivity {
 
@@ -25,28 +22,29 @@ public class ProductListActivity extends AppCompatActivity {
     private List<Product> productList;
     private SearchView searchView;
     private Spinner filterCategory, filterGender, filterPrice;
+    private Button buttonCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
 
-        // Khởi tạo các thành phần
+        // Ánh xạ view
         productRecyclerView = findViewById(R.id.productRecyclerView);
         searchView = findViewById(R.id.searchView);
         filterCategory = findViewById(R.id.filterCategory);
         filterGender = findViewById(R.id.filterGender);
         filterPrice = findViewById(R.id.filterPrice);
-        Button buttonCancel = findViewById(R.id.buttonCancel); // Khai báo buttonCancel
+        buttonCancel = findViewById(R.id.buttonCancel);
 
         // Thiết lập RecyclerView
         productRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         productList = new ArrayList<>();
         loadSampleData();
-        productAdapter = new ProductAdapter(productList);
+        productAdapter = new ProductAdapter(productList,false);
         productRecyclerView.setAdapter(productAdapter);
 
-        // Thiết lập Adapter cho Spinner
+        // Adapter cho Spinner
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
                 R.array.categories, android.R.layout.simple_spinner_item);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -62,193 +60,107 @@ public class ProductListActivity extends AppCompatActivity {
         priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterPrice.setAdapter(priceAdapter);
 
-        // Xử lý tìm kiếm
+        // Nhận Intent từ Home
+        String searchQuery = getIntent().getStringExtra("searchQuery");
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            searchView.setQuery(searchQuery, false); // Chỉ đặt nội dung, không auto submit
+            filterProducts(searchQuery);             // Gọi hàm lọc đúng dữ liệu
+        }
+
+
+        // Nhận Intent từ category
+        String selectedCategory = getIntent().getStringExtra("selectedCategory");
+        if (selectedCategory != null) {
+            int categoryPosition = categoryAdapter.getPosition(selectedCategory);
+            if (categoryPosition >= 0) {
+                filterCategory.setSelection(categoryPosition);
+            }
+            filterProducts();
+        }
+
+        // Lắng nghe tìm kiếm
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
+            @Override public boolean onQueryTextSubmit(String query) {
                 filterProducts(query);
                 return true;
             }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
+            @Override public boolean onQueryTextChange(String newText) {
                 filterProducts(newText);
                 return true;
             }
         });
 
-        // Xử lý bộ lọc
-        filterCategory.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                filterProducts();
-            }
+        // Spinner bộ lọc
+        filterCategory.setOnItemSelectedListener(simpleFilterListener);
+        filterGender.setOnItemSelectedListener(simpleFilterListener);
+        filterPrice.setOnItemSelectedListener(simpleFilterListener);
 
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-
-        filterGender.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                filterProducts();
-            }
-
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-
-        filterPrice.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                filterProducts();
-            }
-
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-
-        // Xử lý sự kiện nhấp vào nút Hủy
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish(); // Đóng ProductListActivity và quay lại HomeActivity
-            }
-        });
+        // Nút Hủy
+        buttonCancel.setOnClickListener(v -> finish());
     }
 
     private void loadSampleData() {
-        productList.add(new Product("Áo sơ mi", 500000, R.drawable.ao_so_mi, "Nam"));
-        productList.add(new Product("Quần jean", 700000, R.drawable.quan_jean, "Nữ"));
-        productList.add(new Product("Áo thun", 300000, R.drawable.ao_thun, "Nam"));
-        productList.add(new Product("Váy", 800000, R.drawable.vay, "Nữ"));
-        productList.add(new Product("Giày thể thao", 1000000, R.drawable.giay_the_thao, "Nam"));
+        productList.add(new Product("Áo sơ mi", R.drawable.ao_so_mi, "500000", "Áo sơ mi cao cấp", "Nam", ""));
+        productList.add(new Product("Quần jean", R.drawable.quan_jean, "700000", "Quần jean bền đẹp", "Nữ", ""));
+        productList.add(new Product("Áo thun", R.drawable.ao_thun, "300000", "Áo thun thoải mái", "Nam", ""));
+        productList.add(new Product("Váy", R.drawable.vay, "800000", "Váy thời trang", "Nữ", ""));
+        productList.add(new Product("Giày thể thao", R.drawable.giay_the_thao, "1000000", "Giày thể thao chất lượng", "Nam", ""));
     }
 
+
     private void filterProducts() {
-        String category = filterCategory.getSelectedItem().toString();
-        String gender = filterGender.getSelectedItem().toString();
-        String priceRange = filterPrice.getSelectedItem().toString();
-        List<Product> filteredList = new ArrayList<>();
-
-        for (Product product : productList) {
-            boolean matchesCategory = category.equals("Tất cả") || product.getCategory().equals(category);
-            boolean matchesGender = gender.equals("Tất cả") || product.getGender().equals(gender);
-            boolean matchesPrice = priceRange.equals("Tất cả") ||
-                    (priceRange.equals("Dưới 500k") && product.getPrice() < 500000) ||
-                    (priceRange.equals("500k - 1tr") && product.getPrice() >= 500000 && product.getPrice() <= 1000000) ||
-                    (priceRange.equals("Trên 1tr") && product.getPrice() > 1000000);
-
-            if (matchesCategory && matchesGender && matchesPrice) {
-                filteredList.add(product);
-            }
-        }
-        productAdapter.updateList(filteredList);
+        filterProducts(searchView.getQuery().toString()); // Gọi lại hàm chính với query hiện tại
     }
 
     private void filterProducts(String query) {
+        String keyword = removeAccents(query);
+        String category = removeAccents(filterCategory.getSelectedItem().toString());
+        String gender = removeAccents(filterGender.getSelectedItem().toString());
+        String priceRange = removeAccents(filterPrice.getSelectedItem().toString());
+
         List<Product> filteredList = new ArrayList<>();
+
         for (Product product : productList) {
-            if (product.getName().toLowerCase().contains(query.toLowerCase())) {
+            String name = removeAccents(product.getName());
+            String productCategory = removeAccents(product.getCategory());
+            String productGender = removeAccents(product.getGender());
+            int productPrice = Integer.parseInt(product.getPrice());
+
+            boolean matchKeyword = name.contains(keyword);
+            boolean matchCategory = category.equals("tat ca") || productCategory.equals(category);
+            boolean matchGender = gender.equals("tat ca") || productGender.equals(gender);
+            boolean matchPrice = priceRange.equals("tat ca") ||
+                    (priceRange.contains("duoi") && productPrice < 500000) ||
+                    (priceRange.contains("500k") && productPrice >= 500000 && productPrice <= 1000000) ||
+                    (priceRange.contains("tren") && productPrice > 1000000);
+
+            if (matchKeyword && matchCategory && matchGender && matchPrice) {
                 filteredList.add(product);
             }
         }
+
         productAdapter.updateList(filteredList);
     }
 
-    // Lớp Product để lưu trữ dữ liệu sản phẩm
-    class Product {
-        private String name;
-        private int price;
-        private int imageResId;
-        private String gender;
 
-        public Product(String name, int price, int imageResId, String gender) {
-            this.name = name;
-            this.price = price;
-            this.imageResId = imageResId;
-            this.gender = gender;
-        }
+    // Bộ lọc dùng chung
+    private final android.widget.AdapterView.OnItemSelectedListener simpleFilterListener =
+            new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int pos, long id) {
+                    filterProducts();
+                }
+                @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+            };
 
-        public String getName() {
-            return name;
-        }
-
-        public int getPrice() {
-            return price;
-        }
-
-        public int getImageResId() {
-            return imageResId;
-        }
-
-        public String getGender() {
-            return gender;
-        }
-
-        public String getCategory() {
-            if (name.contains("Áo")) return "Áo";
-            if (name.contains("Quần")) return "Quần";
-            if (name.contains("Giày")) return "Giày";
-            if (name.contains("Váy")) return "Áo";
-            return "Tất cả";
-        }
-    }
-
-    // Lớp ProductAdapter cho danh sách sản phẩm
-    class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-        private List<Product> productList;
-
-        public ProductAdapter(List<Product> productList) {
-            this.productList = productList;
-        }
-
-        public void updateList(List<Product> newList) {
-            productList = newList;
-            notifyDataSetChanged();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            ImageView productImage;
-            TextView productName, productPrice;
-
-            public ViewHolder(@NonNull View view) {
-                super(view);
-                productImage = view.findViewById(R.id.productImage);
-                productName = view.findViewById(R.id.productName);
-                productPrice = view.findViewById(R.id.productPrice);
-            }
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_product, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            Product product = productList.get(position);
-            holder.productName.setText(product.getName());
-            holder.productPrice.setText(String.format("%,d VNĐ", product.getPrice()));
-            holder.productImage.setImageResource(product.getImageResId());
-
-            // Thêm sự kiện nhấp vào sản phẩm
-            holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(holder.itemView.getContext(), ProductDetailActivity.class);
-                intent.putExtra("product_name", product.getName());
-                intent.putExtra("product_price", product.getPrice());
-                intent.putExtra("product_image", product.getImageResId());
-                intent.putExtra("product_gender", product.getGender());
-                holder.itemView.getContext().startActivity(intent);
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return productList.size();
-        }
+    // Xử lý bỏ dấu tiếng Việt
+    public static String removeAccents(String text) {
+        if (text == null) return "";
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+        return Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
+                .matcher(normalized)
+                .replaceAll("")
+                .toLowerCase()
+                .trim();
     }
 }

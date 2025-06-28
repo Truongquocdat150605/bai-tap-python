@@ -21,7 +21,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         TextView detailName = findViewById(R.id.detailName);
         TextView detailPrice = findViewById(R.id.detailPrice);
         TextView detailGender = findViewById(R.id.detailGender);
+        TextView detailDescription = findViewById(R.id.detailDescription);
         Button btnAddToCart = findViewById(R.id.btnAddToCart);
+        Button buttonCancel = findViewById(R.id.buttonCancel); // Khởi tạo nút Hủy
 
         // Lấy dữ liệu từ Intent
         Bundle extras = getIntent().getExtras();
@@ -31,7 +33,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             int imageResId = extras.getInt("product_image", R.drawable.ic_category_placeholder);
             String gender = extras.getString("product_gender", "Không xác định");
             String description = extras.getString("product_description", "");
-            String imageUrl = extras.getString("product_image_url", ""); // Thêm imageUrl nếu có
+            String imageUrl = extras.getString("product_image_url", "");
 
             // Tạo đối tượng Product đúng constructor 6 tham số
             currentProduct = new Product(name, imageResId, price, description, gender, imageUrl);
@@ -45,14 +47,23 @@ public class ProductDetailActivity extends AppCompatActivity {
                 detailPrice.setText(currentProduct.getPrice());
             }
 
-            detailImage.setImageResource(currentProduct.getImageResId());
+            // Xử lý hình ảnh
+            if (!imageUrl.isEmpty()) {
+                // Sử dụng Glide để tải ảnh từ URL (cần thêm thư viện Glide)
+                // Glide.with(this).load(imageUrl).into(detailImage);
+                detailImage.setImageResource(imageResId); // Fallback nếu không tích hợp Glide
+            } else {
+                detailImage.setImageResource(currentProduct.getImageResId());
+            }
+
             detailGender.setText("Giới tính: " + (currentProduct.getGender() != null ? currentProduct.getGender() : "Không xác định"));
+            detailDescription.setText(currentProduct.getDescription() != null ? currentProduct.getDescription() : "Không có mô tả");
         } else {
-            // Không có dữ liệu
             detailName.setText("Không có thông tin");
             detailPrice.setText("0 VNĐ");
             detailImage.setImageResource(R.drawable.ic_category_placeholder);
             detailGender.setText("Giới tính: Không xác định");
+            detailDescription.setText("Không có mô tả");
             currentProduct = null;
         }
 
@@ -64,6 +75,11 @@ public class ProductDetailActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Không thể thêm sản phẩm trống vào giỏ hàng.", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // Sự kiện nút "Hủy" để quay lại
+        buttonCancel.setOnClickListener(v -> {
+            finish(); // Đóng activity hiện tại và quay lại activity trước đó
         });
     }
 }

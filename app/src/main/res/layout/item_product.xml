@@ -20,6 +20,21 @@
             android:layout_height="120dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_category_placeholder" />
+        <ImageView
+            android:id="@+id/favoriteButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_heart_outline"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="8dp"
+            android:contentDescription="Yêu thích" />
+        <ImageView
+            android:id="@+id/deleteButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_heart_filled"
+            android:contentDescription="Xoá yêu thích"
+            android:tint="#FF0000" />
 
         <TextView
             android:id="@+id/productName"
