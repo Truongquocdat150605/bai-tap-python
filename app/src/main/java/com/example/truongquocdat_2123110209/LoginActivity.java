@@ -3,6 +3,7 @@ package com.example.truongquocdat_2123110209;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,36 +13,46 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class LoginActivity extends AppCompatActivity {
+
     private static final String PREFS_NAME = "MyPrefs";
-    private static final String DEFAULT_EMAIL = "admin@example.com";
-    private static final String DEFAULT_PASSWORD = "password123";
+    private static final String BASE_URL = "https://6868d42dd5933161d70c8ef5.mockapi.io/users";
+
     private static final int MIN_PASSWORD_LENGTH = 6;
+
+    private Toast currentToast = null; // Để chống spam Toast
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        EditText editTextEmail      = findViewById(R.id.editTextEmail);
-        EditText editTextPassword   = findViewById(R.id.editTextPassword);
-        Button buttonLogin          = findViewById(R.id.buttonLogin);
-        TextView buttonRegister     = findViewById(R.id.buttonRegister);
-        ImageView buttonGoogle      = findViewById(R.id.buttonGoogle);
-        ImageView buttonFacebook    = findViewById(R.id.buttonFacebook);
+        EditText editTextEmail = findViewById(R.id.editTextEmail);
+        EditText editTextPassword = findViewById(R.id.editTextPassword);
+        Button buttonLogin = findViewById(R.id.buttonLogin);
+        TextView buttonRegister = findViewById(R.id.buttonRegister);
+        ImageView buttonGoogle = findViewById(R.id.buttonGoogle);
+        ImageView buttonFacebook = findViewById(R.id.buttonFacebook);
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         buttonLogin.setOnClickListener(v -> {
-            // reset lỗi
             editTextEmail.setError(null);
             editTextPassword.setError(null);
 
-            String email    = editTextEmail.getText().toString().trim();
+            String email = editTextEmail.getText().toString().trim();
             String password = editTextPassword.getText().toString().trim();
             boolean isValid = true;
 
-            // validate email
             if (email.isEmpty()) {
                 editTextEmail.setError("Vui lòng nhập Email");
                 isValid = false;
@@ -50,7 +61,6 @@ public class LoginActivity extends AppCompatActivity {
                 isValid = false;
             }
 
-            // validate password
             if (password.isEmpty()) {
                 editTextPassword.setError("Vui lòng nhập Mật khẩu");
                 isValid = false;
@@ -59,35 +69,64 @@ public class LoginActivity extends AppCompatActivity {
                 isValid = false;
             }
 
-            if (!isValid) return;
-
-            // đọc thông tin hợp lệ (lần đầu fallback về admin mặc định)
-            String validEmail    = prefs.getString("saved_email", DEFAULT_EMAIL);
-            String validPassword = prefs.getString("saved_password", DEFAULT_PASSWORD);
-
-            if (email.equals(validEmail) && password.equals(validPassword)) {
-                // đánh dấu đã login
-                prefs.edit().putBoolean("isLoggedIn", true).apply();
-
-                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                // đi HomeActivity
-                startActivity(new Intent(this, HomeActivity.class));
-                finish();
-            } else {
-                Toast.makeText(this, "Email hoặc Mật khẩu không đúng.", Toast.LENGTH_LONG).show();
+            if (isValid) {
+                loginUser(email, password, prefs);
             }
         });
 
         buttonRegister.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterActivity.class))
-        );
+                startActivity(new Intent(this, RegisterActivity.class)));
 
         buttonGoogle.setOnClickListener(v ->
-                Toast.makeText(this, "Đăng nhập bằng Google (demo)", Toast.LENGTH_SHORT).show()
-        );
+                showToast("Đăng nhập bằng Google (demo)"));
 
         buttonFacebook.setOnClickListener(v ->
-                Toast.makeText(this, "Đăng nhập bằng Facebook (demo)", Toast.LENGTH_SHORT).show()
+                showToast("Đăng nhập bằng Facebook (demo)"));
+    }
+
+    private void loginUser(String email, String password, SharedPreferences prefs) {
+        String url = BASE_URL + "?email=" + email + "&password=" + password;
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    if (response.length() > 0) {
+                        try {
+                            JSONObject user = response.getJSONObject(0);
+                            String name = user.optString("name", "Người dùng");
+
+                            prefs.edit()
+                                    .putBoolean("isLoggedIn", true)
+                                    .putString("user_name", name)
+                                    .putString("user_email", email)
+                                    .apply();
+
+                            showToast("Xin chào " + name + "!");
+                            startActivity(new Intent(this, HomeActivity.class));
+                            finish();
+                        } catch (JSONException e) {
+                            Log.e("LoginError", "Lỗi xử lý JSON", e);
+                            showToast("Lỗi xử lý dữ liệu người dùng.");
+                        }
+                    } else {
+                        showToast("Email hoặc mật khẩu không đúng.");
+                    }
+                },
+                error -> {
+                    Log.e("VolleyError", "Lỗi kết nối máy chủ", error);
+                    showToast("Không thể kết nối máy chủ.");
+                }
         );
+
+        queue.add(request);
+    }
+
+    private void showToast(String message) {
+        if (currentToast != null) currentToast.cancel();
+        currentToast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        currentToast.show();
     }
 }

@@ -4,11 +4,14 @@ import java.io.Serializable;
 
 public class Product implements Serializable {
     private String name;
-    private int imageResId;
+    private int imageResId;      // ảnh nội bộ (có thể bỏ sau)
     private String price;
     private String description;
     private String gender;
-    private String imageUrl;
+    private String imageUrl;     // ảnh API
+
+    public Product() {
+    }
 
     public Product(String name, int imageResId, String price, String description, String gender, String imageUrl) {
         this.name = name;
@@ -19,14 +22,14 @@ public class Product implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-    public String getImageUrl() { return imageUrl; }
+    // Getter
     public String getName() { return name; }
     public int getImageResId() { return imageResId; }
+    public String getImageUrl() { return imageUrl; }
     public String getPrice() { return price; }
     public String getDescription() { return description; }
     public String getGender() { return gender; }
 
-    // Thêm phương thức getCategory dựa trên tên
     public String getCategory() {
         String lowerName = name.toLowerCase().trim();
         if (lowerName.startsWith("áo ")) return "áo";
